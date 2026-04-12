@@ -79,6 +79,44 @@
         box-shadow:0 2px 8px rgba(0,0,0,0.15);
     }
 
+    .category-meta{
+        display:flex;
+        gap:0.75rem;
+        align-items:center;
+        flex-wrap:wrap;
+        margin-top:8px;
+    }
+
+    .action-group{
+        display:flex;
+        gap:0.5rem;
+        align-items:center;
+    }
+
+    .btn-edit, .btn-delete{
+        border:none;
+        border-radius:8px;
+        font-size:13px;
+        font-weight:500;
+        padding:5px 12px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-edit{
+        background: linear-gradient(90deg,#ff4fa3,#8b5cf6,#3da5ff);
+        color:white;
+    }
+
+    .btn-delete{
+        background: linear-gradient(90deg,#ff4a6b,#ff758c,#ffa3b1);
+        color:white;
+    }
+
+    .btn-edit:hover, .btn-delete:hover{
+        transform:translateY(-2px);
+        box-shadow:0 6px 15px rgba(0,0,0,0.2);
+    }
+
 </style>
 
 <div class="page-container">
@@ -94,10 +132,21 @@
 
         {{ $category->cat_name }}
 
-        <span class="category-color"
-              style="background-color: {{ $category->cat_color }}; color: {{ in_array(strtolower($category->cat_color), ['#ffffff','white','rgb(255,255,255)']) ? '#000' : '#fff' }};">
-            {{ $category->cat_color }}
-        </span>
+        <div class="category-meta">
+            <span class="category-color"
+                  style="background-color: {{ $category->cat_color }}; color: {{ in_array(strtolower(trim($category->cat_color)), ['#ffffff','white','rgb(255,255,255)']) ? '#000' : '#fff' }};">
+                {{ $category->cat_color }}
+            </span>
+
+            <div class="action-group">
+                <a class="btn btn-edit btn-sm" href="{{ route('categories.edit', $category->id) }}">Edit</a>
+                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-delete btn-sm" type="submit" onclick="return confirm('Delete this category?')">Delete</button>
+                </form>
+            </div>
+        </div>
 
     </li>
     @endforeach

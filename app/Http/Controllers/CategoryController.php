@@ -30,8 +30,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'cat_name' => 'required',
-            'cat_color' => 'required',
+            'cat_name' => 'required|string|max:255|unique:categories,cat_name',
+            'cat_color' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
         ]);
         
         
@@ -40,5 +40,38 @@ class CategoryController extends Controller
                         ->with('success','Category created successfully.');
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Category $category)
+    {
+        return view('categories.edit', compact('category'));
+    }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Category $category)
+    {
+        $request->validate([
+            'cat_name' => 'required|string|max:255|unique:categories,cat_name,' . $category->id,
+            'cat_color' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
+        ]);
+
+        $category->update($request->all());
+
+        return redirect()->route('categories.index')
+                        ->with('success','Category updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Category $category)
+    {
+        $category->delete();
+
+        return redirect()->route('categories.index')
+                        ->with('success','Category deleted successfully.');
+    }
 }

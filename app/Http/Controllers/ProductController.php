@@ -31,17 +31,25 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'category_id' => 'required',
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+            'price' => 'required|numeric|min:0.01|max:999999.99',
+            'category_id' => 'required|exists:categories,id',
+        ], [
+            'name.required' => 'Product name is required.',
+            'name.min' => 'Product name must be at least 3 characters.',
+            'name.max' => 'Product name cannot exceed 255 characters.',
+            'price.required' => 'Price is required.',
+            'price.numeric' => 'Price must be a valid number.',
+            'price.min' => 'Price must be greater than 0.',
+            'price.max' => 'Price cannot exceed 999,999.99.',
+            'category_id.required' => 'Please select a category.',
+            'category_id.exists' => 'The selected category is invalid.',
         ]);
         
-        
-        Product::create($request->all());
+        Product::create($validated);
         return redirect()->route('products.index')
-                        ->with('success','Product created successfully.');
-
+                        ->with('success', 'Product created successfully.');
     }
 
     /**
@@ -54,20 +62,37 @@ class ProductController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Product $product)
+    {
+        return view('products.show', compact('product'));
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'category_id' => 'required',
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+            'price' => 'required|numeric|min:0.01|max:999999.99',
+            'category_id' => 'required|exists:categories,id',
+        ], [
+            'name.required' => 'Product name is required.',
+            'name.min' => 'Product name must be at least 3 characters.',
+            'name.max' => 'Product name cannot exceed 255 characters.',
+            'price.required' => 'Price is required.',
+            'price.numeric' => 'Price must be a valid number.',
+            'price.min' => 'Price must be greater than 0.',
+            'price.max' => 'Price cannot exceed 999,999.99.',
+            'category_id.required' => 'Please select a category.',
+            'category_id.exists' => 'The selected category is invalid.',
         ]);
 
-        $product->update($request->all());
+        $product->update($validated);
         return redirect()->route('products.index')
-                        ->with('success','Product updated successfully.');
-
+                        ->with('success', 'Product updated successfully.');
     }
 
     /**
@@ -77,6 +102,6 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()->route('products.index')
-                        ->with('success','Product deleted successfully.');  
+                        ->with('success', 'Product deleted successfully.');
     }
 }

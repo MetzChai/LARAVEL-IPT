@@ -71,6 +71,38 @@
             box-shadow:0 8px 20px rgba(0,0,0,0.2);
         }
 
+        /* Error Messages */
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Input Error Border */
+        .form-control.is-invalid,
+        .form-select.is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.3) !important;
+        }
+
+        /* Form Group Spacing */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        /* Success Alert */
+        .alert-success {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
     </style>
 
 </head>
@@ -80,21 +112,66 @@
 
 <h2>Add Product</h2>
 
-<form method="POST" action="{{ route('products.store') }}">
+@if ($errors->any())
+    <div class="alert alert-danger" role="alert">
+        <strong>⚠ Validation Error!</strong>
+        <ul class="mb-0 mt-2">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form method="POST" action="{{ route('products.store') }}" novalidate>
     @csrf
 
-    <input class="form-control" type="text" name="name" placeholder="Product Name"><br>
+    <div class="form-group">
+        <input class="form-control @error('name') is-invalid @enderror" 
+               type="text" 
+               name="name" 
+               placeholder="Product Name"
+               value="{{ old('name') }}"
+               required>
+        @error('name')
+            <div class="error-message">
+                <span>✕</span> {{ $message }}
+            </div>
+        @enderror
+    </div>
 
-    <input class="form-control" type="text" name="price" placeholder="Price"><br>
+    <div class="form-group">
+        <input class="form-control @error('price') is-invalid @enderror" 
+               type="text" 
+               name="price" 
+               placeholder="Price"
+               value="{{ old('price') }}"
+               required>
+        @error('price')
+            <div class="error-message">
+                <span>✕</span> {{ $message }}
+            </div>
+        @enderror
+    </div>
 
-    <select class="form-select" name="category_id">
-        <option value="">Select Category</option>
-        @foreach($categories as $category)
-        <option value="{{ $category->id }}">
-            {{ $category->cat_name }}
-        </option>
-        @endforeach
-    </select><br>
+    <div class="form-group">
+        <select class="form-select @error('category_id') is-invalid @enderror" 
+                name="category_id"
+                required>
+            <option value="">Select Category</option>
+            @foreach($categories as $category)
+            <option value="{{ $category->id }}" 
+                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                {{ $category->cat_name }}
+            </option>
+            @endforeach
+        </select>
+        @error('category_id')
+            <div class="error-message">
+                <span>✕</span> {{ $message }}
+            </div>
+        @enderror
+    </div>
 
     <button class="btn btn-primary w-100" type="submit">Save</button>
 
